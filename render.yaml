@@ -1,0 +1,24 @@
+databases:
+  - name: agriassistdb
+    plan: free
+    databaseName: agriassist
+    user: agriassist
+
+services:
+  - type: web
+    plan: free
+    name: agriassist-ussd
+    runtime: python
+    buildCommand: './build.sh'
+    startCommand: 'python -m gunicorn agriassist.config.asgi:application -k uvicorn.workers.UvicornWorker'
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agriassistdb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: 'False'
+      - key: WEB_CONCURRENCY
+        value: 4
