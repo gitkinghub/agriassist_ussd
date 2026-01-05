@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class UssdConfig(AppConfig):
-    name = 'USSD'
+    name = 'agriassist.USSD'
