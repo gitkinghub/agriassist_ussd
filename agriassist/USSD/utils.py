@@ -28,10 +28,8 @@ class USSDMenuHandler:
         Returns:
             str: Response text to be sent back to user
         """
-        
-        registered_user = ['254112130020']
-        
-        is_registered = self.user.phone_number in registered_user
+                
+        is_registered = bool(self.user.first_name)
         
         if not is_registered:
             return self.registration_menu()

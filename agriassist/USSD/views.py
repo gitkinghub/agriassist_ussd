@@ -50,7 +50,7 @@ def ussd_callback(request):
         }
     )
     
-    handler= USSDMenuHandler(user, session, session_state, text)
+    handler = USSDMenuHandler(user, session, session_state, text)
     response_text, is_end = handler.process()
     
     # Update session if ended
