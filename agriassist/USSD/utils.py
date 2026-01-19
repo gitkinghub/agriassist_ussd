@@ -360,7 +360,6 @@ class USSDMenuHandler:
             
         bookings = UssdBooking.objects.filter(
             user=self.user,
-            status='confirmed',
             booking_date__gte=timezone.now().date()
         ).order_by('booking_date', 'time_slot')
         
@@ -377,9 +376,10 @@ class USSDMenuHandler:
             time_display = dict(TIME_SLOTS).get(booking.time_slot, booking.time_slot)
             
             response += (
-                f" {booking.booking_date}\n"
-                f" {time_display}\n"
-                f" {booking.party_size} guests\n"
+                f"Booking Data: {booking.booking_date}\n"
+                f"Time:{time_display}\n"
+                f"Persons: {booking.party_size} guests\n"
+                f"Status:{booking.status}"
                 f"Ref: {booking.reference_number}\n\n"
             )
         
