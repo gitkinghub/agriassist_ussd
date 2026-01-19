@@ -1,6 +1,6 @@
 """ ussd utility functions"""
 
-import datetime
+from django.utils import timezone
 from agriassist.USSD.constants import TIME_SLOTS
 from agriassist.USSD.models import UssdBooking
 
@@ -348,7 +348,6 @@ class USSDMenuHandler:
                 True
             )
             
-    
     def my_bookings_menu(self):
         """
         Handle my bookings
@@ -358,15 +357,22 @@ class USSDMenuHandler:
         - Display "My Bookings"
         - List bookings
         """
-        bookings = UssdBooking.objects.filter(user=self.user, booking_date__gte=datetime.now())
+            
+        bookings = UssdBooking.objects.filter(
+            user=self.user,
+            status='confirmed',
+            booking_date__gte=timezone.now().date()
+        ).order_by('booking_date', 'time_slot')
         
-        if not bookings:
+        if not bookings.exists():
             return (
-                "You have no bookings.\n",
+                "You have no upcoming bookings.\n\n"
+                "Book a table from the main menu!",
                 True
             )
-            
+        
         response = "Your Upcoming Bookings:\n\n"
+        
         for booking in bookings:
             time_display = dict(TIME_SLOTS).get(booking.time_slot, booking.time_slot)
             
@@ -374,7 +380,7 @@ class USSDMenuHandler:
                 f" {booking.booking_date}\n"
                 f" {time_display}\n"
                 f" {booking.party_size} guests\n"
-                f"Ref No: {booking.reference_number}\n\n"
+                f"Ref: {booking.reference_number}\n\n"
             )
         
         response += "For changes call:\n+88-123-123456"
@@ -383,8 +389,8 @@ class USSDMenuHandler:
             response,
             True
         )
-        
-        
+            
+            
     def breakfast_menu(self):
         """
         Handle breakfast menu
