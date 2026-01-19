@@ -1,5 +1,8 @@
 """ ussd utility functions"""
 
+from agriassist.USSD.models import UssdBooking
+
+
 class USSDMenuHandler:
     def __init__(self, user, session, session_state, text):
         """
@@ -174,7 +177,7 @@ class USSDMenuHandler:
         elif self.user_input == '3':
             self.state.current_menu = 'my_bookings'
             self.state.save()
-            return self.view_menu()
+            return self.my_bookings_menu()
         elif self.user_input == '4':
             self.state.current_menu = 'contact_us'
             self.state.save()
@@ -254,11 +257,103 @@ class USSDMenuHandler:
         - Display "Book Table"
         - Prompt for date and time
         """
-        return (
-            "Book Table:\n"
-            "Enter date and time (YYYY-MM-DD HH:MM):",
-            False
+        if 'book_table_menu' not in self.state.temp_data:
+            self.state.temp_data['book_table_menu'] = True
+            self.state.save()
+            return(
+                "Booking Information:\n"
+                "Enter booking date (YYYY-MM-DD):",
+                False
+            )
+        
+        if 'booking_date' not in self.state.temp_data:
+            booking_date = self.user_input.strip()
+            self.state.temp_data['booking_date'] = booking_date
+            self.state.save()
+            return(
+                "Enter booking time (HH:MM):",
+                False
+            )
+        
+        if 'time_slot' not in self.state.temp_data:
+            time_slot = self.user_input.strip()
+            self.state.temp_data['time_slot'] = time_slot
+            self.state.save()
+            return(
+                "Enter number of people:",
+                False
+            )
+        
+        if 'party_size' not in self.state.temp_data:
+            party_size = self.user_input.strip()
+            self.state.temp_data['party_size'] = party_size
+            self.state.save()
+            return(
+                "Write any special requests:",
+                False
+            )
+            
+        if 'special_requests' not in self.state.temp_data:
+            special_requests = self.user_input.strip()
+            self.state.temp_data['special_requests'] = special_requests
+            self.state.save()
+            return(
+                "Confirm booking:\n"
+                f"Name: {self.user.first_name} {self.user.last_name}\n"
+                f"Booking Date: {self.state.temp_data['booking_date']}\n"
+                "1. Confirm\n"
+                "2. Edit\n"
+                "0. Cancel",
+                False
+            )
+            
+        if self.user_input == '1':
+            booking = UssdBooking.objects.create(
+                user = self.user,
+                booking_date = self.state.temp_data['booking_date'],
+                time_slot = self.state.temp_data['time_slot'],
+                party_size = self.state.temp_data['party_size'],
+                special_requests = self.state.temp_data['special_requests']
+            )
+            
+            # Clear temp data and update menu
+            self.state.temp_data = {}
+            self.state.current_menu = 'main_menu'
+            self.state.save()
+            
+            return(
+                "Booking successful!\n"
+                "Thank you for booking with us.",
+                True
+            )
+            
+        elif self.user_input == '2':
+            self.state.temp_data = {}
+            self.state.save()
+            return self.book_table_menu()
+        
+        else:            
+            return(
+                "Booking cancelled.\n",
+                True
+            )
+            
+    
+    def my_bookings_menu(self):
+        """
+        Handle my bookings
+        
+        USER STORY: View bookings
+        Acceptance Criteria:
+        - Display "My Bookings"
+        - List bookings
+        """
+        bookings = UssdBooking.objects.filter(user=self.user)
+        return(
+            "My Bookings:\n"
+            f"{bookings}"
         )
+        
         
     def breakfast_menu(self):
         """

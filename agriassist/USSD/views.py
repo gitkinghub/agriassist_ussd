@@ -58,7 +58,6 @@ def ussd_callback(request):
         session.is_active = False
         session.ended_at = timezone.now()
         session.save()
-        print(f"[USSD] Session ended: {session_id}")
     
     # Format response for AfricasTalking
     # CON = Continue (show menu and wait for input)
