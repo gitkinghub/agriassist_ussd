@@ -1,5 +1,6 @@
 """ ussd utility functions"""
 
+import datetime
 from agriassist.USSD.constants import TIME_SLOTS
 from agriassist.USSD.models import UssdBooking
 
@@ -357,7 +358,7 @@ class USSDMenuHandler:
         - Display "My Bookings"
         - List bookings
         """
-        bookings = UssdBooking.objects.filter(user=self.user)
+        bookings = UssdBooking.objects.filter(user=self.user, booking_date__gte=datetime.now())
         
         if not bookings:
             return (
@@ -365,6 +366,7 @@ class USSDMenuHandler:
                 True
             )
             
+        response = "Your Upcoming Bookings:\n\n"
         for booking in bookings:
             time_display = dict(TIME_SLOTS).get(booking.time_slot, booking.time_slot)
             
