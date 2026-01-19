@@ -1,5 +1,6 @@
 """ ussd utility functions"""
 
+from agriassist.USSD.constants import TIME_SLOTS
 from agriassist.USSD.models import UssdBooking
 
 
@@ -270,13 +271,21 @@ class USSDMenuHandler:
             booking_date = self.user_input.strip()
             self.state.temp_data['booking_date'] = booking_date
             self.state.save()
+            
+            slots = [f"{time}. {display}" for time, (_, display) in enumerate(TIME_SLOTS, start=1)]
             return(
-                "Enter booking time (HH:MM):",
+                "Available time slots:\n\n" + "\n".join(slots) + "\n\nEnter booking time slot:",
                 False
             )
         
         if 'time_slot' not in self.state.temp_data:
-            time_slot = self.user_input.strip()
+            time_mapping = {str(time): time_value for time, (time_value, _) in enumerate(TIME_SLOTS, start=1)}
+            if self.user_input not in time_mapping:
+                return(
+                    "Invalid time slot. Please try again.",
+                    False
+                )
+            time_slot = time_mapping[self.user_input]
             self.state.temp_data['time_slot'] = time_slot
             self.state.save()
             return(
