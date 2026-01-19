@@ -358,9 +358,28 @@ class USSDMenuHandler:
         - List bookings
         """
         bookings = UssdBooking.objects.filter(user=self.user)
-        return(
-            "My Bookings:\n"
-            f"{bookings}"
+        
+        if not bookings:
+            return (
+                "You have no bookings.\n",
+                True
+            )
+            
+        for booking in bookings:
+            time_display = dict(TIME_SLOTS).get(booking.time_slot, booking.time_slot)
+            
+            response += (
+                f" {booking.booking_date}\n"
+                f" {time_display}\n"
+                f" {booking.party_size} guests\n"
+                f"Ref No: {booking.reference_number}\n\n"
+            )
+        
+        response += "For changes call:\n+88-123-123456"
+        
+        return (
+            response,
+            True
         )
         
         
