@@ -33,6 +33,9 @@ DEBUG = os.getenv("DEBUG", "false") == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+AFRICAS_TALKING_API_KEY = os.getenv("AFRICAS_TALKING_API_KEY")
+AFRICAS_TALKING_USERNAME = os.getenv("AFRICAS_TALKING_USERNAME")
+
 
 # Application definition
 

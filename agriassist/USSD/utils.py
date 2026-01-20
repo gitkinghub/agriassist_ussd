@@ -3,6 +3,7 @@
 from django.utils import timezone
 from agriassist.USSD.constants import TIME_SLOTS
 from agriassist.USSD.models import UssdBooking
+from agriassist.USSD.sms import send_sms
 
 
 class USSDMenuHandler:
@@ -385,8 +386,10 @@ class USSDMenuHandler:
         
         response += "For changes call:\n+88-123-123456"
         
+        send_sms(self.user.phone_number, response)
+        
         return (
-            response,
+            'Message sent successfully',
             True
         )
             
