@@ -11,5 +11,5 @@ sms = africastalking.SMS
 def send_sms(phone_number: str, message: str) -> None:
     sms.send(
         message = message,
-        receipient = [phone_number],
+        recipients = [phone_number],
     )
