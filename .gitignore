@@ -156,3 +156,4 @@ erp.nohup
 efile.txt
 *.sqlite3
 # Dockerrun.aws.json
+ussd/
